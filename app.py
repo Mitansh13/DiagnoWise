@@ -129,6 +129,12 @@ def disindex():
     return render_template("disindex.html")
 
 
+@app.route("/gendis")
+# @login_required
+def gendis():
+    return render_template("gendis.html")
+
+
 @app.route("/cancer")
 # @login_required
 def cancer():
