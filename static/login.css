@@ -40,3 +40,8 @@ body {
   border-top-left-radius: 0;
   border-top-right-radius: 0;
 }
+
+/* Add labels before input blocks */
+/* .form-signin label::before {
+  content: attr(data-label) ": ";
+} */

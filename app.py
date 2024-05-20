@@ -13,11 +13,14 @@ import numpy as np
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.model_selection import train_test_split
 import SVM 
+import pymongo
 
+classifier = pickle.load(open('D:\Final Major Project\RiskAssess\Models\diabetes-prediction-rfc-model.pkl', 'rb'))
+model = pickle.load(open('D:\Final Major Project\RiskAssess\Models\model.pkl', 'rb'))
+model1 = pickle.load(open('D:\Final Major Project\RiskAssess\Models\model1.pkl', 'rb'))
 
-classifier = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\diabetes-prediction-rfc-model.pkl', 'rb'))
-model = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model.pkl', 'rb'))
-model1 = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model1.pkl', 'rb'))
+# mongodb+srv://<username>:<password>@omnispectra.j3xzuo0.mongodb.net/?retryWrites=true&w=majority&appName=OmniSpectra
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -27,25 +30,35 @@ db = SQLAlchemy(app)
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
+client = pymongo.MongoClient("mongodb+srv://admin:admin@riskassess.1npzwhc.mongodb.net/?retryWrites=true&w=majority&appName=RiskAssess")
+db = client.get_database('Patients')
+users_collection = db.users
 
+class User(UserMixin):
+    def __init__(self, user_id, username, email, password):
+        self.user_id = user_id
+        self.username = username
+        self.email = email
+        self.password = password
 
-class User(UserMixin, db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(15), unique=True)
-    email = db.Column(db.String(50), unique=True)
-    password = db.Column(db.String(80))
+    def get_id(self):
+        return str(self.user_id)
 
+    @staticmethod
+    def find_user(username):
+        return users_collection.find_one({'username': username})
 
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(int(user_id))
-
+    user_data = users_collection.find_one({'_id': user_id})
+    if user_data:
+        return User(user_data['_id'], user_data['username'], user_data['email'], user_data['password'])
+    return None
 
 class LoginForm(FlaskForm):
     username = StringField('Username', validators=[InputRequired(), Length(min=4, max=15)])
     password = PasswordField('Password', validators=[InputRequired(), Length(min=8, max=80)])
     remember = BooleanField('remember me')
-
 
 class RegisterForm(FlaskForm):
     email = StringField('Email', validators=[InputRequired(), Email(message='Invalid email'), Length(max=50)])
@@ -72,30 +85,51 @@ def help():
 def terms():
     return render_template("tc.html")
 
+# @app.route('/login', methods=['GET', 'POST'])
+# def login():
+#     form = LoginForm()
+#     if form.validate_on_submit():
+#         user = User.find_user(form.username.data)
+#         if user and check_password_hash(user['password'], form.password.data):
+#             login_user(User(user['username'], user['email'], user['password']))
+#             return redirect(url_for('dashboard'))
+#     return render_template("login.html", form=form)
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
-    if form.validate_on_submit():
-        # Redirect to the dashboard without any validation
-        return redirect(url_for('dashboard'))
-    # Render the login template regardless of form submission
-    return render_template("dashboard.html", form=form)
+    if request.method == 'POST':
+        username = request.form.get('username')
+        password = request.form.get('password')
 
+        if username and password:
+            user_data = User.find_user(username)
+            if user_data and check_password_hash(user_data['password'], password):
+                user = User(user_data['_id'], user_data['username'], user_data['email'], user_data['password'])
+                login_user(user, remember=request.form.get('remember'))
 
-
+                return redirect(url_for('dashboard'))
+            else:
+                error_message = "Invalid username or password. Please try again."
+                return render_template('login.html', form=form, error_message=error_message)
+        else:
+            error_message = "Please fill out both fields."
+            return render_template('login.html', form=form, error_message=error_message)
+    
+    return render_template('login.html', form=form)
 
 @app.route('/signup', methods=['GET', 'POST'])
 def signup():
     form = RegisterForm()
     if form.validate_on_submit():
         hashed_password = generate_password_hash(form.password.data)
-        new_user = User(username=form.username.data, email=form.email.data, password=hashed_password)
-        db.session.add(new_user)
-        db.session.commit()
-
+        new_user = {
+            'username': form.username.data,
+            'email': form.email.data,
+            'password': hashed_password
+        }
+        users_collection.insert_one(new_user)
         return redirect("/login")
     return render_template('signup.html', form=form)
-
 
 @app.route('/Home')
 def Home():
@@ -129,12 +163,6 @@ def disindex():
     return render_template("disindex.html")
 
 
-@app.route("/gendis")
-# @login_required
-def gendis():
-    return render_template("gendis.html")
-
-
 @app.route("/cancer")
 # @login_required
 def cancer():
@@ -162,7 +190,7 @@ def liver():
 def ValuePred(to_predict_list, size):
     to_predict = np.array(to_predict_list).reshape(1,size)
     if(size==7):
-        loaded_model = joblib.load('D:\MajorProject\MajorProject\RiskAssess\Models\liver_model.pkl')
+        loaded_model = joblib.load('D:\Final Major Project\RiskAssess\Models\liver_model.pkl')
         result = loaded_model.predict(to_predict)
     return result[0]
 
