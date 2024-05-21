@@ -9,122 +9,25 @@
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
     <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='index1.css') }}">
     <link rel="stylesheet" href="../static/chat.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
 
 </head>
 
 <body>
-
-    <header>
-        <nav class="navbar navbar-expand-md navbar-dark fixed-top">
-            <a class="navbar-brand" href="#">
-                <img src="/static/img/logo.png" alt="DiagnoWise Logo" class="logo-img">
-                <!-- Replace path_to_your_logo_image with the actual path to your logo image -->
-                <b class="logo">DiagnoWise</b>
-            </a> <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarCollapse"
-                aria-controls="navbarCollapse" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarCollapse">
-                <ul class="navbar-nav ml-auto">
-                    <li class="nav-item">
-                        <a class="navitems" href="/dashboard">Get Started</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems" href="/disindex">Disease Index</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems" href="/gendis">General Disease</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems active" href="/cancer">Breast Cancer</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems" href="/diabetes">Diabetes</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems" href="/heart">Heart Disease</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems" href="/liver">Liver Disease</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems" href="#">|</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="navitems" href="/logout">Logout</a>
-                    </li>
-                </ul>
-            </div>
-        </nav>
-    </header>
-
-    <div class="container mt-5">
-        <div class="form-container">
-            <h1 class="text-center">General Disease Prediction</h1>
-            <h5 class="text-center mb-4">Please enter the patient details</h5>
-
-
-            <form action="{{ url_for('predict')}}" method="post">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <legend>Patient Details</legend>
-                        <div class="form-group">
-                            <label for="clump_thickness">Clump Thickness</label>
-                            <input type="number" class="form-control" name="clump_thickness" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="uniform_cell_size">Uniform Cell Size</label>
-                            <input type="number" class="form-control" name="uniform_cell_size" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="uniform_cell_shape">Uniform Cell Shape</label>
-                            <input type="number" class="form-control" name="uniform_cell_shape" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="marginal_adhesion">Marginal Adhesion</label>
-                            <input type="number" class="form-control" name="marginal_adhesion" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="single_epithelial_size">Single Epithelial Cell Size</label>
-                            <input type="number" class="form-control" name="single_epithelial_size" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bare_nuclei">Bare Nuclei</label>
-                            <input type="number" class="form-control" name="bare_nuclei" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bland_chromatin">Bland Chromatin</label>
-                            <input type="number" class="form-control" name="bland_chromatin" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="normal_nucleoli">Normal Nucleoli</label>
-                            <input type="number" class="form-control" name="normal_nucleoli" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="mitoses">Mitoses</label>
-                            <input type="number" class="form-control" name="mitoses" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Predict</button>
-
-
-                    </div>
-
-                </div>
-
-        </div>
+    <div class="container">
+        <h2>Disease Prediction</h2>
+        <form action="{{ url_for('predict') }}" method="post">
+            {% for i in range(6) %}
+                <label for="symptom{{i+1}}">Symptom {{i+1}}</label>
+                <select id="symptom{{i+1}}" name="symptom{{i+1}}">
+                    {% for symptom in symptoms %}
+                        <option value="{{ loop.index0 }}">{{ symptom }}</option>
+                    {% endfor %}
+                </select><br>
+            {% endfor %}
+            <button type="submit">Predict</button>
         </form>
     </div>
-
-    <div id="chatbot-container">
-        <button id="chatbot-button">
-            <img src="{{ url_for('static', filename='robot.png') }}" alt="Chatbot Image">
-        </button>
-        <iframe id="chatbot-frame" allow="microphone;"
-            src="https://console.dialogflow.com/api-client/demo/embedded/9e3957a0-9780-494f-88af-d91841ca1db7"></iframe>
-    </div>
-
-
-
     <script src="../static/script.js"></script>
     <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
         integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
@@ -136,5 +39,4 @@
         integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
         crossorigin="anonymous"></script>
 </body>
-
 </html>

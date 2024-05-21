@@ -18,6 +18,7 @@ import SVM
 classifier = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\diabetes-prediction-rfc-model.pkl', 'rb'))
 model = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model.pkl', 'rb'))
 model1 = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model1.pkl', 'rb'))
+health = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\health_model.pkl', 'rb'))  
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -157,6 +158,10 @@ def heart():
 def liver():
     return render_template("liver.html")
 
+
+
+
+
 #Liver
 
 def ValuePred(to_predict_list, size):
@@ -209,8 +214,6 @@ def predict():
 
 # Diabetes
 
-
-
 @app.route('/predictt', methods=['POST'])
 def predictt():
     if request.method == 'POST':
@@ -228,8 +231,32 @@ def predictt():
 
         return render_template('diab_result.html', prediction=my_prediction)
 
-    
-    # Heart
+#General Health Diseases function    
+
+data = pd.read_csv('D:\MajorProject\MajorProject\RiskAssess\Dataset\Training.csv')
+symptoms = data.columns[:-1].tolist()  # Exclude the last column 'prognosis'
+
+
+@app.route('/')
+def home():
+    return render_template('gendis.html', symptoms=symptoms)
+
+
+@app.route('/predicthealth', methods=['POST'])
+def predicthealth():
+    if request.method == 'POST':
+        selected_symptoms = [int(request.form[f'symptom{i+1}']) for i in range(6)]
+        input_data = np.array(selected_symptoms).reshape(1, -1)
+        prediction = health.predict(input_data)
+        
+        result = 'Disease Detected' if prediction[0] == 1 else 'No Disease Detected'
+        return render_template('gendisresult.html', prediction=result)
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+# Heart
 
 @app.route('/predictheart', methods=['POST'])
 def predictheart():
