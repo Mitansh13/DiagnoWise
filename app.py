@@ -18,6 +18,8 @@ import pymongo
 classifier = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\diabetes-prediction-rfc-model.pkl', 'rb'))
 model = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model.pkl', 'rb'))
 model1 = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model1.pkl', 'rb'))
+rf_model = joblib.load('D:\MajorProject\MajorProject\RiskAssess\Models\health_model.pkl')
+encoder = joblib.load('D:\MajorProject\MajorProject\RiskAssess\Models\encoder.pkl')
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -191,7 +193,7 @@ def liver():
 def ValuePred(to_predict_list, size):
     to_predict = np.array(to_predict_list).reshape(1,size)
     if(size==7):
-        loaded_model = joblib.load('D:\Final Major Project\RiskAssess\Models\liver_model.pkl')
+        loaded_model = joblib.load('D:\MajorProject\MajorProject\RiskAssess\Models\liver_model.pkl')
         result = loaded_model.predict(to_predict)
     return result[0]
 
@@ -255,30 +257,39 @@ def predictt():
 
         return render_template('diab_result.html', prediction=my_prediction)
 
-#General Health Diseases function    
+#General Disease
 
+# Load dataset and identify symptom columns
 data = pd.read_csv('D:\MajorProject\MajorProject\RiskAssess\Dataset\Training.csv')
-symptoms = data.columns[:-1].tolist()  # Exclude the last column 'prognosis'
+symptoms = data.columns[:-2].tolist()  # Exclude the last column 'prognosis'
 
-
-@app.route('/')
-def home():
-    return render_template('gendis.html', symptoms=symptoms)
-
-
-@app.route('/predicthealth', methods=['POST'])
-def predicthealth():
+@app.route('/predictgen', methods=['GET','POST'])
+def predictgen():
     if request.method == 'POST':
-        selected_symptoms = [int(request.form[f'symptom{i+1}']) for i in range(6)]
-        input_data = np.array(selected_symptoms).reshape(1, -1)
-        prediction = health.predict(input_data)
-        
-        result = 'Disease Detected' if prediction[0] == 1 else 'No Disease Detected'
-        return render_template('gendisresult.html', prediction=result)
+        selected_symptoms = [
+            request.form.get('symptom1'),
+            request.form.get('symptom2'),
+            request.form.get('symptom3'),
+            request.form.get('symptom4'),
+            request.form.get('symptom5'),
+            request.form.get('symptom6')
+        ]
 
-if __name__ == '__main__':
-    app.run(debug=True)
+        # Create an input vector for prediction
+        input_vector = [0] * len(symptoms)
+        for symptom in selected_symptoms:
+            if symptom in symptoms:
+                index = symptoms.index(symptom)
+                input_vector[index] = 1
 
+        input_vector = np.array(input_vector).reshape(1, -1)
+
+        # Predict the disease
+        prediction = rf_model.predict(input_vector)
+        predicted_disease = encoder.inverse_transform(prediction)[0]
+
+        return render_template('gendisresult.html', prediction=predicted_disease)
+    return render_template('gendis.html', symptoms=symptoms)
 
 # Heart
 
