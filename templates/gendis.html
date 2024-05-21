@@ -58,62 +58,54 @@
         </nav>
     </header>
 
-    <div class="container mt-5">
-        <div class="form-container">
-            <h1 class="text-center">General Disease Prediction</h1>
-            <h5 class="text-center mb-4">Please enter the patient details</h5>
-
-
-            <form action="{{ url_for('predict')}}" method="post">
-                <div class="row justify-content-center">
-                    <div class="col-md-6">
-                        <legend>Patient Details</legend>
-                        <div class="form-group">
-                            <label for="clump_thickness">Clump Thickness</label>
-                            <input type="number" class="form-control" name="clump_thickness" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="uniform_cell_size">Uniform Cell Size</label>
-                            <input type="number" class="form-control" name="uniform_cell_size" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="uniform_cell_shape">Uniform Cell Shape</label>
-                            <input type="number" class="form-control" name="uniform_cell_shape" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="marginal_adhesion">Marginal Adhesion</label>
-                            <input type="number" class="form-control" name="marginal_adhesion" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="single_epithelial_size">Single Epithelial Cell Size</label>
-                            <input type="number" class="form-control" name="single_epithelial_size" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bare_nuclei">Bare Nuclei</label>
-                            <input type="number" class="form-control" name="bare_nuclei" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="bland_chromatin">Bland Chromatin</label>
-                            <input type="number" class="form-control" name="bland_chromatin" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="normal_nucleoli">Normal Nucleoli</label>
-                            <input type="number" class="form-control" name="normal_nucleoli" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="mitoses">Mitoses</label>
-                            <input type="number" class="form-control" name="mitoses" required>
-                        </div>
-                        <button type="submit" class="btn btn-primary btn-block">Predict</button>
-
-
-                    </div>
-
-                </div>
-
-        </div>
-        </form>
-    </div>
+    <div class="container mt-4">
+        <h1>Select Symptoms to Predict Disease</h1>
+    <form action="{{ url_for('predict') }}" method="POST">
+        <label for="symptom1">Symptom 1:</label>
+        <select name="symptom1" id="symptom1">
+            {% for symptom in symptoms %}
+                <option value="{{ symptom }}">{{ symptom }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="symptom2">Symptom 2:</label>
+        <select name="symptom2" id="symptom2">
+            {% for symptom in symptoms %}
+                <option value="{{ symptom }}">{{ symptom }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="symptom3">Symptom 3:</label>
+        <select name="symptom3" id="symptom3">
+            {% for symptom in symptoms %}
+                <option value="{{ symptom }}">{{ symptom }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="symptom4">Symptom 4:</label>
+        <select name="symptom4" id="symptom4">
+            {% for symptom in symptoms %}
+                <option value="{{ symptom }}">{{ symptom }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="symptom5">Symptom 5:</label>
+        <select name="symptom5" id="symptom5">
+            {% for symptom in symptoms %}
+                <option value="{{ symptom }}">{{ symptom }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <label for="symptom6">Symptom 6:</label>
+        <select name="symptom6" id="symptom6">
+            {% for symptom in symptoms %}
+                <option value="{{ symptom }}">{{ symptom }}</option>
+            {% endfor %}
+        </select>
+        <br>
+        <button type="submit">Predict</button>
+    </form>
+      </div>
 
     <div id="chatbot-container">
         <button id="chatbot-button">

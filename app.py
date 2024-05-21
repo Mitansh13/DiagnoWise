@@ -15,9 +15,12 @@ from sklearn.model_selection import train_test_split
 import SVM 
 
 
-classifier = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\diabetes-prediction-rfc-model.pkl', 'rb'))
-model = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model.pkl', 'rb'))
-model1 = pickle.load(open('D:\MajorProject\MajorProject\RiskAssess\Models\model1.pkl', 'rb'))
+classifier = pickle.load(open('F:\College\Major Project\DiagnoWise\Diagnowise\Models\diabetes-prediction-rfc-model.pkl', 'rb'))
+model = pickle.load(open('F:\College\Major Project\DiagnoWise\Diagnowise\Models\model.pkl', 'rb'))
+model1 = pickle.load(open('F:\College\Major Project\DiagnoWise\Diagnowise\Models\model1.pkl', 'rb'))
+rf_model = joblib.load('F:\College\Major Project\DiagnoWise\Diagnowise\Models\health_model.pkl')
+encoder = joblib.load('F:\College\Major Project\DiagnoWise\Diagnowise\Models\encoder.pkl')
+
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'secret'
@@ -80,8 +83,6 @@ def login():
         return redirect(url_for('dashboard'))
     # Render the login template regardless of form submission
     return render_template("dashboard.html", form=form)
-
-
 
 
 @app.route('/signup', methods=['GET', 'POST'])
@@ -191,8 +192,8 @@ def logout():
 
 # Breast-Cancer
 
-@app.route('/predict', methods=['POST'])
-def predict():
+@app.route('/predictbreast', methods=['POST'])
+def predictbreast():
     input_features = [int(x) for x in request.form.values()]
     features_value = [np.array(input_features)]
     features_name = ['clump_thickness', 'uniform_cell_size', 'uniform_cell_shape', 'marginal_adhesion',
@@ -207,9 +208,8 @@ def predict():
     return render_template('cancer_result.html', prediction_text='Patient has {}'.format(res_val))
 
 
+
 # Diabetes
-
-
 
 @app.route('/predictt', methods=['POST'])
 def predictt():
@@ -228,6 +228,39 @@ def predictt():
 
         return render_template('diab_result.html', prediction=my_prediction)
 
+#General Disease
+
+# Load dataset and identify symptom columns
+data = pd.read_csv('F:\College\Major Project\DiagnoWise\Diagnowise\Dataset\Training.csv')
+symptoms = data.columns[:-2].tolist()  # Exclude the last column 'prognosis'
+
+@app.route('/predict', methods=['GET','POST'])
+def predict():
+    if request.method == 'POST':
+        selected_symptoms = [
+            request.form.get('symptom1'),
+            request.form.get('symptom2'),
+            request.form.get('symptom3'),
+            request.form.get('symptom4'),
+            request.form.get('symptom5'),
+            request.form.get('symptom6')
+        ]
+
+        # Create an input vector for prediction
+        input_vector = [0] * len(symptoms)
+        for symptom in selected_symptoms:
+            if symptom in symptoms:
+                index = symptoms.index(symptom)
+                input_vector[index] = 1
+
+        input_vector = np.array(input_vector).reshape(1, -1)
+
+        # Predict the disease
+        prediction = rf_model.predict(input_vector)
+        predicted_disease = encoder.inverse_transform(prediction)[0]
+
+        return render_template('result.html', prediction=predicted_disease)
+    return render_template('gendis.html', symptoms=symptoms)
     
     # Heart
 
