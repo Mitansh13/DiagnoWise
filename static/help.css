@@ -103,3 +103,30 @@ nav {
 .themed-container p {
     margin-bottom: 0; /* Removed bottom margin from paragraphs */
 }
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.step {
+    font-size: 1.25em;
+    margin-bottom: 15px;
+    color: #495057;
+    padding: 10px;
+    border-left: 4px solid #1184a8;
+    background-color: #f1f1f1;
+    border-radius: 4px;
+}
+
+.step:nth-child(even) {
+    background-color: #e9ecef;
+}
+
+.step:nth-child(odd) {
+    background-color: #f8f9fa;
+}
