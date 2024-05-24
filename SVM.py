@@ -5,7 +5,7 @@ from sklearn import svm
 #import csv
 
 def svm_pred(age, sex, cp, trestbps, chol, fbs, restecg, thalach, exang, oldpeak, slope, ca, thal):
-    data = pd.read_csv("D:\Final Major Project\RiskAssess\Dataset\heart.csv")
+    data = pd.read_csv("D:\MajorProject\MajorProject\RiskAssess\Dataset\heart.csv")
     
     train = data.drop('target', axis = 1)
     target = data.target
