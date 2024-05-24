@@ -1,0 +1,24 @@
+/* Styles for form columns */
+.form-column {
+    margin-bottom: 20px;
+}
+
+/* Styling the submit button */
+button[type="submit"] {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background-color: #007bff;
+    border: none;
+    color: white;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+button[type="submit"]:hover {
+    background-color: #0056b3;
+}
+
+/* Placeholder color */
+select option[disabled] {
+    color: #aaa;
+}
