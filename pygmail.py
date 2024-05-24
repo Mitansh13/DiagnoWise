@@ -1,8 +1,8 @@
 import smtplib
 
 def sendEmail( mailto, doctor, date, time, name, report ):
-    gmailaddress = "EMAIL_ID"
-    gmailpassword = "PASSWORD"
+    gmailaddress = "chhotachattri007@gmail.com"
+    gmailpassword = "@Chhota007"
     
     sub = "Confirmed: Doctor Appointment Booked"
     if (len(report) == 0): report = "Checkup"
