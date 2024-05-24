@@ -24,4 +24,27 @@ select option[disabled] {
 }
 
 
+.container {
+    margin-top: 5em;
+    border: 2px solid transparent; /* Transparent border for the form container */
+    border-radius: 10px; /* Rounded corners for the form container */
+    padding: 10px; /* Add padding to the form container */
+    background-color: #ffffff; /* Light gray background color */
+    color: #000000; /* Text color */
+    box-shadow: 
+        0 0 0 2px #6c757d, /* First layer for the outer border (steel gray color) */
+        0 0 0 4px #bbb, /* Second layer for the inner border (light gray color) */
+        0 0 8px 16px rgba(0, 0, 0, 0.3); /* Add shadow effect */
+    transition: all 0.3s ease; /* Smooth transition effect */
+}
 
+.form-group{
+    position: center;
+    padding: 15px;
+    margin-top: 10px;
+    /* background-color: #fbf6e3; */
+}
+
+.form-cont{
+    background-color: #fbf6e3;
+}
